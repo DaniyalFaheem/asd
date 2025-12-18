@@ -629,7 +629,7 @@ class EmotionTrackerApp:
                 # Aurora-styled face rectangle
                 cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 230), 2)  # Purple/Pink color
 
-            if time.time() - self.last_analysis > 1.0:  # Slightly faster analysis interval
+            if time.time() - self.last_analysis > 1.5:  # Analysis interval
                 self.last_analysis = time.time()
                 threading.Thread(target=self._ai_analysis, args=(frame.copy(),), daemon=True).start()
 
@@ -645,11 +645,11 @@ class EmotionTrackerApp:
 
     def _ai_analysis(self, frame):
         try:
-            # Enhanced detection with multiple backends for better accuracy
+            # Enhanced detection with RetinaFace for better accuracy
             res = DeepFace.analyze(
                 frame, 
                 actions=['emotion'], 
-                enforce_detection=True,
+                enforce_detection=False,  # Allow graceful handling when no face detected
                 detector_backend='retinaface',  # More accurate face detection
                 silent=True
             )[0]
