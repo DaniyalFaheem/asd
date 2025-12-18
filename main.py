@@ -1,7 +1,7 @@
 """
-Emotion Tracker & Recommendation System — Ultra-Dark Professional Edition
-Optimized for High-Visibility & Comprehensive Monitoring
-Restructured by: Gemini AI
+Emotion Tracker & Recommendation System — Aurora Gradient Edition
+Powered by CustomTkinter with Aurora Theme
+Restructured by: Gemini AI | Enhanced by: GitHub Copilot
 """
 
 import sys
@@ -17,26 +17,39 @@ try:
     import cv2
     from deepface import DeepFace
     import numpy as np
+    import customtkinter as ctk
     import tkinter as tk
-    from tkinter import ttk, messagebox, filedialog
-    from PIL import Image, ImageTk
+    from tkinter import ttk, messagebox
+    from PIL import Image, ImageTk, ImageDraw
     import pyttsx3
 except Exception as e:
     print(f"Missing Library Error: {e}")
     sys.exit(1)
 
 # =========================
-# UI COLOR CONFIGURATION (ULTRA DARK)
+# AURORA GRADIENT THEME CONFIGURATION
 # =========================
-THEME = {
-    "bg_root": "#050505",       # Pure Black
-    "bg_card": "#111111",       # Deep Gray Card
-    "fg_main": "#E0E0E0",       # Off-White Text
-    "accent": "#00D4FF",        # Neon Cyan
-    "btn_bg": "#1A1A1A",        # Button Background
-    "btn_fg": "#FFFFFF",        # Button Text
-    "danger": "#FF3131",        # Neon Red
-    "success": "#00FF41"        # Matrix Green
+# CustomTkinter appearance settings
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("blue")
+
+# Aurora gradient colors (purple, blue, pink, cyan)
+AURORA_THEME = {
+    "bg_dark": "#0D0D1A",           # Deep space dark
+    "bg_card": "#1A1A2E",           # Card background
+    "bg_secondary": "#16213E",      # Secondary background
+    "aurora_purple": "#9D4EDD",     # Aurora purple
+    "aurora_blue": "#7B2CBF",       # Aurora blue-purple
+    "aurora_pink": "#E040FB",       # Aurora pink
+    "aurora_cyan": "#00E5FF",       # Aurora cyan
+    "aurora_magenta": "#C77DFF",    # Aurora light purple
+    "text_primary": "#FFFFFF",      # White text
+    "text_secondary": "#B8B8D1",    # Light gray text
+    "gradient_start": "#667eea",    # Gradient start (indigo)
+    "gradient_end": "#764ba2",      # Gradient end (purple)
+    "success": "#00E676",           # Success green
+    "danger": "#FF5252",            # Danger red
+    "warning": "#FFD740",           # Warning yellow
 }
 
 # =========================
@@ -125,12 +138,12 @@ for emo in ["fear", "surprise", "neutral"]:
         MEDIA_CYCLES[emo] = {"songs": ["https://www.youtube.com/results?search_query=focus+music"], "poetry": ["https://www.youtube.com/results?search_query=peaceful+poetry"], "novels": ["https://www.youtube.com/results?search_query=mindfulness+books"], "alt": "https://www.youtube.com/results?search_query=lofi+beats"}
 
 EMOTION_DATA = {
-    "happy": {"emoji": "😊", "color": "#00FF41", "reason": "Positive vibes! Share your joy.", "book": "The Alchemist", "summary": "A journey to find your destiny."},
-    "sad": {"emoji": "😢", "color": "#4169E1", "reason": "Low energy detected. Take it easy.", "book": "Peer-e-Kamil", "summary": "A path of spiritual discovery."},
-    "angry": {"emoji": "😡", "color": "#FF3131", "reason": "Tension detected. Take deep breaths.", "book": "The Power of Now", "summary": "Living in the present moment."},
-    "fear": {"emoji": "😨", "color": "#9932CC", "reason": "Anxiety detected. You are safe.", "book": "Atomic Habits", "summary": "Tiny changes, big results."},
-    "surprise": {"emoji": "😲", "color": "#FF8C00", "reason": "Shock detected. Adapt and learn.", "book": "Who Moved My Cheese", "summary": "Dealing with change."},
-    "neutral": {"emoji": "😐", "color": "#708090", "reason": "Balanced state. Keep focusing.", "book": "Think Like a Monk", "summary": "Purpose and clarity."}
+    "happy": {"emoji": "😊", "color": AURORA_THEME["success"], "reason": "Positive vibes! Share your joy.", "book": "The Alchemist", "summary": "A journey to find your destiny."},
+    "sad": {"emoji": "😢", "color": AURORA_THEME["aurora_blue"], "reason": "Low energy detected. Take it easy.", "book": "Peer-e-Kamil", "summary": "A path of spiritual discovery."},
+    "angry": {"emoji": "😡", "color": AURORA_THEME["danger"], "reason": "Tension detected. Take deep breaths.", "book": "The Power of Now", "summary": "Living in the present moment."},
+    "fear": {"emoji": "😨", "color": AURORA_THEME["aurora_purple"], "reason": "Anxiety detected. You are safe.", "book": "Atomic Habits", "summary": "Tiny changes, big results."},
+    "surprise": {"emoji": "😲", "color": AURORA_THEME["warning"], "reason": "Shock detected. Adapt and learn.", "book": "Who Moved My Cheese", "summary": "Dealing with change."},
+    "neutral": {"emoji": "😐", "color": AURORA_THEME["aurora_cyan"], "reason": "Balanced state. Keep focusing.", "book": "Think Like a Monk", "summary": "Purpose and clarity."}
 }
 
 # =========================
@@ -158,7 +171,7 @@ class MediaCycleManager:
         return MEDIA_CYCLES[emo], idx, self.streak
 
 # =========================
-# MAIN APPLICATION
+# MAIN APPLICATION (CustomTkinter Aurora Edition)
 # =========================
 
 class EmotionTrackerApp:
@@ -166,10 +179,10 @@ class EmotionTrackerApp:
 
     def __init__(self, master):
         self.master = master
-        self.master.title("NEURAL MOOD PRO — ASADULLAH FARZAND EDITION")
-        self.master.geometry("1200x850")
-        self.master.configure(bg=THEME["bg_root"])
-
+        self.master.title("NEURAL MOOD PRO — AURORA EDITION")
+        self.master.geometry("1280x900")
+        self.master.configure(fg_color=AURORA_THEME["bg_dark"])
+        
         # Systems
         self.cap = None
         self.running = False
@@ -185,118 +198,418 @@ class EmotionTrackerApp:
             self.tts.setProperty('rate', 140)
         except: self.tts = None
 
-        self._apply_styles()
         self._build_interface()
+        self._apply_tree_styles()
 
-    def _apply_styles(self):
+    def _apply_tree_styles(self):
+        """Apply styles to ttk Treeview for consistency with Aurora theme"""
         style = ttk.Style()
         style.theme_use("clam")
-        style.configure("TFrame", background=THEME["bg_root"])
-        style.configure("TLabelframe", background=THEME["bg_root"], foreground=THEME["accent"], font=("Orbitron", 10, "bold"))
-        style.configure("TLabelframe.Label", background=THEME["bg_root"], foreground=THEME["accent"])
-        style.configure("Treeview", background=THEME["bg_card"], foreground=THEME["fg_main"], fieldbackground=THEME["bg_card"], rowheight=25)
-        style.map("Treeview", background=[('selected', THEME['accent'])], foreground=[('selected', 'black')])
-        style.configure("Treeview.Heading", background=THEME["btn_bg"], foreground=THEME["accent"], font=("Arial", 9, "bold"))
+        style.configure("Aurora.Treeview", 
+                       background=AURORA_THEME["bg_card"], 
+                       foreground=AURORA_THEME["text_primary"], 
+                       fieldbackground=AURORA_THEME["bg_card"], 
+                       rowheight=28,
+                       font=("Segoe UI", 10))
+        style.map("Aurora.Treeview", 
+                 background=[('selected', AURORA_THEME['aurora_purple'])], 
+                 foreground=[('selected', 'white')])
+        style.configure("Aurora.Treeview.Heading", 
+                       background=AURORA_THEME["bg_secondary"], 
+                       foreground=AURORA_THEME["aurora_cyan"], 
+                       font=("Segoe UI", 10, "bold"))
 
     def _build_interface(self):
-        # Header
-        hdr = tk.Frame(self.master, bg=THEME["bg_root"], pady=15)
-        hdr.pack(fill=tk.X)
-        tk.Label(hdr, text="NEURAL MOOD PRO", font=("Orbitron", 24, "bold"), bg=THEME["bg_root"], fg=THEME["accent"]).pack()
-        tk.Label(hdr, text="Advanced Emotion Intelligence System", font=("Arial", 10), bg=THEME["bg_root"], fg="#666").pack()
+        # Main container
+        main_container = ctk.CTkFrame(self.master, fg_color=AURORA_THEME["bg_dark"])
+        main_container.pack(fill="both", expand=True, padx=10, pady=10)
+        
+        # Header with Aurora gradient effect
+        self._create_header(main_container)
+        
+        # Content area with two panels
+        content_frame = ctk.CTkFrame(main_container, fg_color="transparent")
+        content_frame.pack(fill="both", expand=True, pady=10)
+        content_frame.grid_columnconfigure(0, weight=1)
+        content_frame.grid_columnconfigure(1, weight=1)
+        content_frame.grid_rowconfigure(0, weight=1)
+        
+        # Left Panel - Video Feed & Controls
+        self._create_left_panel(content_frame)
+        
+        # Right Panel - Dashboard & Logs
+        self._create_right_panel(content_frame)
 
-        main_paned = tk.PanedWindow(self.master, orient=tk.HORIZONTAL, bg="#222", bd=0, sashwidth=2)
-        main_paned.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+    def _create_header(self, parent):
+        """Create Aurora-styled header"""
+        header_frame = ctk.CTkFrame(parent, fg_color=AURORA_THEME["bg_card"], corner_radius=15, height=100)
+        header_frame.pack(fill="x", pady=(0, 10))
+        header_frame.pack_propagate(False)
+        
+        # Aurora accent line at top
+        accent_frame = ctk.CTkFrame(header_frame, fg_color=AURORA_THEME["aurora_purple"], height=3, corner_radius=0)
+        accent_frame.pack(fill="x")
+        
+        # Title
+        title_label = ctk.CTkLabel(
+            header_frame, 
+            text="✨ NEURAL MOOD PRO",
+            font=ctk.CTkFont(family="Segoe UI", size=32, weight="bold"),
+            text_color=AURORA_THEME["aurora_cyan"]
+        )
+        title_label.pack(pady=(15, 5))
+        
+        # Subtitle with gradient-like effect (using multiple colors in description)
+        subtitle_label = ctk.CTkLabel(
+            header_frame, 
+            text="Advanced Emotion Intelligence System | Aurora Edition",
+            font=ctk.CTkFont(family="Segoe UI", size=12),
+            text_color=AURORA_THEME["aurora_magenta"]
+        )
+        subtitle_label.pack()
 
-        # --- LEFT PANEL: FEED & SYSTEM ---
-        left_p = tk.Frame(main_paned, bg=THEME["bg_root"])
-        main_paned.add(left_p, width=550)
-
-        self.preview = tk.Label(left_p, bg="#000", bd=2, relief="flat", highlightbackground=THEME["accent"], highlightthickness=1)
-        self.preview.pack(pady=5)
+    def _create_left_panel(self, parent):
+        """Create left panel with video feed and controls"""
+        left_panel = ctk.CTkFrame(parent, fg_color=AURORA_THEME["bg_card"], corner_radius=15)
+        left_panel.grid(row=0, column=0, sticky="nsew", padx=(0, 5))
+        
+        # Video Preview Frame
+        preview_frame = ctk.CTkFrame(left_panel, fg_color=AURORA_THEME["bg_secondary"], corner_radius=10)
+        preview_frame.pack(fill="x", padx=15, pady=15)
+        
+        # Aurora border effect around video
+        self.preview = ctk.CTkLabel(preview_frame, text="", fg_color="#000000", corner_radius=8)
+        self.preview.pack(padx=3, pady=3)
         self._placeholder()
-
-        # Controls Card
-        ctrl_f = tk.LabelFrame(left_p, text=" SYSTEM CONTROLS ", padx=15, pady=15)
-        ctrl_f.pack(fill=tk.X, pady=10, padx=5)
-
-        tk.Button(ctrl_f, text="START AI SCAN", command=self.start, bg=THEME["success"], fg="black", font=("Arial", 10, "bold"), height=2).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=5)
-        tk.Button(ctrl_f, text="STOP", command=self.stop, bg=THEME["danger"], fg="white", font=("Arial", 10, "bold"), height=2).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=5)
         
-        self.voice_var = tk.BooleanVar(value=True)
-        tk.Checkbutton(ctrl_f, text="AI Voice", variable=self.voice_var, bg=THEME["bg_root"], fg="white", selectcolor="black", activebackground="black").pack(side=tk.LEFT, padx=10)
-
-        # Settings Sub-Card
-        set_f = tk.Frame(left_p, bg=THEME["bg_root"])
-        set_f.pack(fill=tk.X, padx=5)
-        tk.Label(set_f, text="Camera Index:", bg=THEME["bg_root"], fg="#888").pack(side=tk.LEFT)
-        self.cam_entry = tk.Entry(set_f, width=5, bg="#222", fg="white", bd=0); self.cam_entry.insert(0, "0")
-        self.cam_entry.pack(side=tk.LEFT, padx=5)
-
-        # --- RIGHT PANEL: DASHBOARD & LOGS ---
-        right_p = tk.Frame(main_paned, bg=THEME["bg_root"])
-        main_paned.add(right_p)
-
-        # Live Status Card
-        dash = tk.Frame(right_p, bg=THEME["bg_card"], padx=20, pady=20)
-        dash.pack(fill=tk.X, padx=10, pady=5)
+        # System Controls Card
+        controls_frame = ctk.CTkFrame(left_panel, fg_color=AURORA_THEME["bg_secondary"], corner_radius=10)
+        controls_frame.pack(fill="x", padx=15, pady=(0, 15))
         
-        self.lbl_emoji = tk.Label(dash, text="❓", font=("Segoe UI Emoji", 70), bg=THEME["bg_card"])
-        self.lbl_emoji.pack(side=tk.LEFT)
+        controls_label = ctk.CTkLabel(
+            controls_frame, 
+            text="🎮 SYSTEM CONTROLS",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            text_color=AURORA_THEME["aurora_cyan"]
+        )
+        controls_label.pack(pady=(15, 10))
         
-        info_f = tk.Frame(dash, bg=THEME["bg_card"])
-        info_f.pack(side=tk.LEFT, padx=25)
-        self.lbl_emo = tk.Label(info_f, text="AWAITING DATA", font=("Helvetica", 24, "bold"), bg=THEME["bg_card"], fg=THEME["accent"])
-        self.lbl_emo.pack(anchor="w")
-        self.lbl_adv = tk.Label(info_f, text="System ready for facial analysis...", font=("Arial", 11), bg=THEME["bg_card"], fg="#AAA", wraplength=350, justify="left")
-        self.lbl_adv.pack(anchor="w")
+        # Button container
+        btn_container = ctk.CTkFrame(controls_frame, fg_color="transparent")
+        btn_container.pack(fill="x", padx=15, pady=(0, 15))
+        
+        # Start Button with Aurora gradient colors
+        start_btn = ctk.CTkButton(
+            btn_container,
+            text="▶ START AI SCAN",
+            command=self.start,
+            fg_color=AURORA_THEME["aurora_purple"],
+            hover_color=AURORA_THEME["aurora_blue"],
+            font=ctk.CTkFont(size=13, weight="bold"),
+            height=45,
+            corner_radius=10
+        )
+        start_btn.pack(side="left", expand=True, fill="x", padx=(0, 5))
+        
+        # Stop Button
+        stop_btn = ctk.CTkButton(
+            btn_container,
+            text="⏹ STOP",
+            command=self.stop,
+            fg_color=AURORA_THEME["danger"],
+            hover_color="#FF1744",
+            font=ctk.CTkFont(size=13, weight="bold"),
+            height=45,
+            corner_radius=10
+        )
+        stop_btn.pack(side="left", expand=True, fill="x", padx=(5, 0))
+        
+        # Voice toggle
+        self.voice_var = ctk.BooleanVar(value=True)
+        voice_switch = ctk.CTkSwitch(
+            controls_frame,
+            text="AI Voice Feedback",
+            variable=self.voice_var,
+            font=ctk.CTkFont(size=12),
+            text_color=AURORA_THEME["text_secondary"],
+            progress_color=AURORA_THEME["aurora_pink"],
+            button_color=AURORA_THEME["aurora_cyan"]
+        )
+        voice_switch.pack(pady=(0, 15))
+        
+        # Camera Settings
+        settings_frame = ctk.CTkFrame(left_panel, fg_color=AURORA_THEME["bg_secondary"], corner_radius=10)
+        settings_frame.pack(fill="x", padx=15, pady=(0, 15))
+        
+        settings_label = ctk.CTkLabel(
+            settings_frame, 
+            text="⚙️ CAMERA SETTINGS",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            text_color=AURORA_THEME["aurora_cyan"]
+        )
+        settings_label.pack(pady=(15, 10))
+        
+        cam_container = ctk.CTkFrame(settings_frame, fg_color="transparent")
+        cam_container.pack(fill="x", padx=15, pady=(0, 15))
+        
+        ctk.CTkLabel(
+            cam_container, 
+            text="Camera Index:",
+            font=ctk.CTkFont(size=12),
+            text_color=AURORA_THEME["text_secondary"]
+        ).pack(side="left")
+        
+        self.cam_entry = ctk.CTkEntry(
+            cam_container, 
+            width=60, 
+            fg_color=AURORA_THEME["bg_card"],
+            border_color=AURORA_THEME["aurora_purple"],
+            text_color=AURORA_THEME["text_primary"]
+        )
+        self.cam_entry.insert(0, "0")
+        self.cam_entry.pack(side="left", padx=10)
 
-        # Media Cycle Dashboard
-        cycle_f = tk.Frame(right_p, bg=THEME["bg_root"])
-        cycle_f.pack(fill=tk.X, padx=10, pady=10)
-        self.lbl_cycle = tk.Label(cycle_f, text="Cycle: 0/3 | Streak: 0", bg=THEME["bg_root"], fg=THEME["accent"], font=("Courier", 10))
-        self.lbl_cycle.pack()
-
+    def _create_right_panel(self, parent):
+        """Create right panel with dashboard and logs"""
+        right_panel = ctk.CTkFrame(parent, fg_color=AURORA_THEME["bg_card"], corner_radius=15)
+        right_panel.grid(row=0, column=1, sticky="nsew", padx=(5, 0))
+        
+        # Create scrollable frame for right panel content
+        scroll_frame = ctk.CTkScrollableFrame(right_panel, fg_color="transparent")
+        scroll_frame.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        # Live Status Dashboard
+        self._create_status_dashboard(scroll_frame)
+        
+        # Media Cycle Info
+        self._create_cycle_info(scroll_frame)
+        
         # Recommendation Hub
-        hub = tk.Frame(right_p, bg=THEME["bg_root"])
-        hub.pack(fill=tk.X, padx=10, pady=5)
-        btns = [("🎵 SONG", self.open_song), ("📝 POETRY", self.open_poetry), ("📚 NOVEL", self.open_novel), ("🔥 ALTERNATE", self.open_alt)]
-        for text, cmd in btns:
-            tk.Button(hub, text=text, command=cmd, bg=THEME["btn_bg"], fg=THEME["btn_fg"], bd=1, height=2).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=2)
+        self._create_recommendation_hub(scroll_frame)
+        
+        # Detection History
+        self._create_history_section(scroll_frame)
+        
+        # Action Buttons
+        self._create_action_buttons(scroll_frame)
+        
+        # Feature Buttons
+        self._create_feature_buttons(scroll_frame)
 
-        # History Tree
-        tk.Label(right_p, text="DETECTION HISTORY", bg=THEME["bg_root"], fg="#555", font=("Arial", 8, "bold")).pack(anchor="w", padx=10, pady=(15, 0))
-        self.tree = ttk.Treeview(right_p, columns=("T", "E", "C"), show="headings", height=10)
-        self.tree.heading("T", text="TIMESTAMP"); self.tree.heading("E", text="EMOTION"); self.tree.heading("C", text="COMMENT")
-        self.tree.column("T", width=100); self.tree.column("E", width=120); self.tree.column("C", width=250)
-        self.tree.pack(fill=tk.BOTH, expand=True, padx=10)
+    def _create_status_dashboard(self, parent):
+        """Create the live emotion status display"""
+        dashboard = ctk.CTkFrame(parent, fg_color=AURORA_THEME["bg_secondary"], corner_radius=12)
+        dashboard.pack(fill="x", padx=10, pady=10)
+        
+        # Inner container for horizontal layout
+        inner = ctk.CTkFrame(dashboard, fg_color="transparent")
+        inner.pack(fill="x", padx=20, pady=20)
+        
+        # Emoji display
+        self.lbl_emoji = ctk.CTkLabel(
+            inner, 
+            text="❓",
+            font=ctk.CTkFont(size=70),
+            text_color=AURORA_THEME["text_primary"]
+        )
+        self.lbl_emoji.pack(side="left", padx=(0, 20))
+        
+        # Info container
+        info_frame = ctk.CTkFrame(inner, fg_color="transparent")
+        info_frame.pack(side="left", fill="x", expand=True)
+        
+        self.lbl_emo = ctk.CTkLabel(
+            info_frame,
+            text="AWAITING DATA",
+            font=ctk.CTkFont(size=24, weight="bold"),
+            text_color=AURORA_THEME["aurora_cyan"]
+        )
+        self.lbl_emo.pack(anchor="w")
+        
+        self.lbl_adv = ctk.CTkLabel(
+            info_frame,
+            text="System ready for facial analysis...",
+            font=ctk.CTkFont(size=12),
+            text_color=AURORA_THEME["text_secondary"],
+            wraplength=300
+        )
+        self.lbl_adv.pack(anchor="w", pady=(5, 0))
 
-        # Data Actions
-        data_f = tk.Frame(right_p, bg=THEME["bg_root"], pady=10)
-        data_f.pack(fill=tk.X, padx=10)
-        tk.Button(data_f, text="💬 ADD COMMENT", command=self.add_comment, bg="#333", fg="white").pack(side=tk.LEFT, expand=True, fill=tk.X, padx=2)
-        tk.Button(data_f, text="🗑️ CLEAR LOG", command=self.clear_history, bg="#333", fg=THEME["danger"]).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=2)
-        tk.Button(data_f, text="💾 EXPORT CSV", command=self.export_csv, bg="#333", fg=THEME["success"]).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=2)
+    def _create_cycle_info(self, parent):
+        """Create media cycle information display"""
+        cycle_frame = ctk.CTkFrame(parent, fg_color=AURORA_THEME["bg_secondary"], corner_radius=10)
+        cycle_frame.pack(fill="x", padx=10, pady=(0, 10))
+        
+        self.lbl_cycle = ctk.CTkLabel(
+            cycle_frame,
+            text="📊 Cycle: 0/3 | Streak: 0 detections",
+            font=ctk.CTkFont(size=12, weight="bold"),
+            text_color=AURORA_THEME["aurora_magenta"]
+        )
+        self.lbl_cycle.pack(pady=12)
 
-        # Feature Footer
-        feat_f = tk.Frame(right_p, bg=THEME["bg_root"], pady=5)
-        feat_f.pack(fill=tk.X, padx=10)
-        tk.Button(feat_f, text="🤖 AI WELLNESS REPORT", command=self.ai_report, bg=THEME["accent"], fg="black", font=("Arial", 9, "bold")).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=2)
-        tk.Button(feat_f, text="🔄 4-STEP CYCLE", command=self.show_4_step, bg="#222", fg="white").pack(side=tk.LEFT, expand=True, fill=tk.X, padx=2)
-        tk.Button(feat_f, text="📸 SNAPSHOT", command=self.take_snapshot, bg="#222", fg="white").pack(side=tk.LEFT, expand=True, fill=tk.X, padx=2)
+    def _create_recommendation_hub(self, parent):
+        """Create recommendation buttons"""
+        hub_frame = ctk.CTkFrame(parent, fg_color=AURORA_THEME["bg_secondary"], corner_radius=10)
+        hub_frame.pack(fill="x", padx=10, pady=(0, 10))
+        
+        hub_label = ctk.CTkLabel(
+            hub_frame,
+            text="🎯 RECOMMENDATION HUB",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            text_color=AURORA_THEME["aurora_cyan"]
+        )
+        hub_label.pack(pady=(15, 10))
+        
+        btn_container = ctk.CTkFrame(hub_frame, fg_color="transparent")
+        btn_container.pack(fill="x", padx=15, pady=(0, 15))
+        
+        buttons = [
+            ("🎵 SONG", self.open_song, AURORA_THEME["aurora_purple"]),
+            ("📝 POETRY", self.open_poetry, AURORA_THEME["aurora_blue"]),
+            ("📚 NOVEL", self.open_novel, AURORA_THEME["aurora_pink"]),
+            ("🔥 ALT", self.open_alt, AURORA_THEME["aurora_magenta"])
+        ]
+        
+        for text, cmd, color in buttons:
+            btn = ctk.CTkButton(
+                btn_container,
+                text=text,
+                command=cmd,
+                fg_color=color,
+                hover_color=AURORA_THEME["aurora_cyan"],
+                font=ctk.CTkFont(size=11, weight="bold"),
+                height=40,
+                corner_radius=8
+            )
+            btn.pack(side="left", expand=True, fill="x", padx=2)
+
+    def _create_history_section(self, parent):
+        """Create detection history section with Treeview"""
+        history_frame = ctk.CTkFrame(parent, fg_color=AURORA_THEME["bg_secondary"], corner_radius=10)
+        history_frame.pack(fill="both", expand=True, padx=10, pady=(0, 10))
+        
+        history_label = ctk.CTkLabel(
+            history_frame,
+            text="📋 DETECTION HISTORY",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            text_color=AURORA_THEME["aurora_cyan"]
+        )
+        history_label.pack(pady=(15, 10))
+        
+        # Treeview container (using tk.Frame for ttk compatibility)
+        tree_container = tk.Frame(history_frame, bg=AURORA_THEME["bg_card"])
+        tree_container.pack(fill="both", expand=True, padx=15, pady=(0, 15))
+        
+        self.tree = ttk.Treeview(
+            tree_container, 
+            columns=("T", "E", "C"), 
+            show="headings", 
+            height=8,
+            style="Aurora.Treeview"
+        )
+        self.tree.heading("T", text="TIME")
+        self.tree.heading("E", text="EMOTION")
+        self.tree.heading("C", text="COMMENT")
+        self.tree.column("T", width=90)
+        self.tree.column("E", width=110)
+        self.tree.column("C", width=200)
+        
+        # Scrollbar
+        scrollbar = ttk.Scrollbar(tree_container, orient="vertical", command=self.tree.yview)
+        self.tree.configure(yscrollcommand=scrollbar.set)
+        
+        self.tree.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+    def _create_action_buttons(self, parent):
+        """Create data action buttons"""
+        action_frame = ctk.CTkFrame(parent, fg_color="transparent")
+        action_frame.pack(fill="x", padx=10, pady=(0, 10))
+        
+        actions = [
+            ("💬 ADD COMMENT", self.add_comment, AURORA_THEME["bg_secondary"]),
+            ("🗑️ CLEAR LOG", self.clear_history, AURORA_THEME["danger"]),
+            ("💾 EXPORT CSV", self.export_csv, AURORA_THEME["success"])
+        ]
+        
+        for text, cmd, color in actions:
+            btn = ctk.CTkButton(
+                action_frame,
+                text=text,
+                command=cmd,
+                fg_color=color,
+                hover_color=AURORA_THEME["aurora_purple"],
+                font=ctk.CTkFont(size=11),
+                height=35,
+                corner_radius=8
+            )
+            btn.pack(side="left", expand=True, fill="x", padx=2)
+
+    def _create_feature_buttons(self, parent):
+        """Create feature buttons"""
+        feature_frame = ctk.CTkFrame(parent, fg_color="transparent")
+        feature_frame.pack(fill="x", padx=10, pady=(0, 10))
+        
+        # AI Report button with Aurora gradient colors
+        ai_btn = ctk.CTkButton(
+            feature_frame,
+            text="🤖 AI WELLNESS REPORT",
+            command=self.ai_report,
+            fg_color=AURORA_THEME["aurora_cyan"],
+            hover_color=AURORA_THEME["aurora_purple"],
+            font=ctk.CTkFont(size=12, weight="bold"),
+            height=40,
+            corner_radius=10
+        )
+        ai_btn.pack(side="left", expand=True, fill="x", padx=2)
+        
+        cycle_btn = ctk.CTkButton(
+            feature_frame,
+            text="🔄 4-STEP CYCLE",
+            command=self.show_4_step,
+            fg_color=AURORA_THEME["bg_secondary"],
+            hover_color=AURORA_THEME["aurora_blue"],
+            font=ctk.CTkFont(size=11),
+            height=40,
+            corner_radius=10
+        )
+        cycle_btn.pack(side="left", expand=True, fill="x", padx=2)
+        
+        snap_btn = ctk.CTkButton(
+            feature_frame,
+            text="📸 SNAPSHOT",
+            command=self.take_snapshot,
+            fg_color=AURORA_THEME["bg_secondary"],
+            hover_color=AURORA_THEME["aurora_pink"],
+            font=ctk.CTkFont(size=11),
+            height=40,
+            corner_radius=10
+        )
+        snap_btn.pack(side="left", expand=True, fill="x", padx=2)
 
     # --- FUNCTIONAL LOGIC ---
 
     def _placeholder(self):
-        img = Image.new('RGB', (550, 400), color='#080808')
+        """Create placeholder image for video preview"""
+        img = Image.new('RGB', (530, 380), color=AURORA_THEME["bg_dark"])
+        # Add Aurora-styled border effect
+        draw = ImageDraw.Draw(img)
+        draw.rectangle([0, 0, 529, 379], outline=AURORA_THEME["aurora_purple"], width=2)
         tk_img = ImageTk.PhotoImage(img)
-        self.preview.config(image=tk_img); self.preview.image = tk_img
+        self.preview.configure(image=tk_img)
+        self.preview.image = tk_img
 
     def start(self):
         if self.running: return
-        idx = int(self.cam_entry.get())
+        try:
+            idx = int(self.cam_entry.get())
+        except ValueError:
+            idx = 0
         self.cap = cv2.VideoCapture(idx)
-        if not self.cap.isOpened(): messagebox.showerror("Error", "Camera Not Found"); return
+        if not self.cap.isOpened(): 
+            messagebox.showerror("Error", "Camera Not Found")
+            return
         self.running = True
         threading.Thread(target=self._main_loop, daemon=True).start()
 
@@ -313,64 +626,101 @@ class EmotionTrackerApp:
             
             if EmotionTrackerApp.face_rect:
                 x, y, w, h = EmotionTrackerApp.face_rect
-                cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 212, 255), 2)
+                # Aurora-styled face rectangle
+                cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 230), 2)  # Purple/Pink color
 
-            if time.time() - self.last_analysis > 1.5:
+            if time.time() - self.last_analysis > 1.0:  # Slightly faster analysis interval
                 self.last_analysis = time.time()
                 threading.Thread(target=self._ai_analysis, args=(frame.copy(),), daemon=True).start()
 
             img = cv2.cvtColor(cv2.flip(frame, 1), cv2.COLOR_BGR2RGB)
-            img = Image.fromarray(img).resize((550, 400))
+            img = Image.fromarray(img).resize((530, 380))
             tk_img = ImageTk.PhotoImage(img)
             self.master.after(0, self._update_video, tk_img)
             time.sleep(0.01)
 
     def _update_video(self, img):
-        self.preview.config(image=img); self.preview.image = img
+        self.preview.configure(image=img)
+        self.preview.image = img
 
     def _ai_analysis(self, frame):
         try:
-            res = DeepFace.analyze(frame, actions=['emotion'], silent=True)[0]
+            # Enhanced detection with multiple backends for better accuracy
+            res = DeepFace.analyze(
+                frame, 
+                actions=['emotion'], 
+                enforce_detection=True,
+                detector_backend='retinaface',  # More accurate face detection
+                silent=True
+            )[0]
             dom = res['dominant_emotion']
             r = res['region']
             EmotionTrackerApp.face_rect = (r['x'], r['y'], r['w'], r['h'])
             self.smoother.add(dom)
             smoothed = self.smoother.get()
             self.master.after(0, lambda: self._process_result(smoothed))
-        except: EmotionTrackerApp.face_rect = None
+        except Exception:
+            # Try alternative detection if RetinaFace fails
+            try:
+                res = DeepFace.analyze(
+                    frame, 
+                    actions=['emotion'], 
+                    enforce_detection=False,
+                    detector_backend='opencv',
+                    silent=True
+                )[0]
+                dom = res['dominant_emotion']
+                r = res['region']
+                EmotionTrackerApp.face_rect = (r['x'], r['y'], r['w'], r['h'])
+                self.smoother.add(dom)
+                smoothed = self.smoother.get()
+                self.master.after(0, lambda: self._process_result(smoothed))
+            except:
+                EmotionTrackerApp.face_rect = None
 
     def _process_result(self, emo):
         self.current_emo_key = emo
         data = EMOTION_DATA.get(emo, EMOTION_DATA["neutral"])
         media, pos, streak = self.media_mgr.get_media(emo)
         
-        # UI Updates
-        self.lbl_emoji.config(text=data['emoji'])
-        self.lbl_emo.config(text=emo.upper(), fg=data['color'])
-        self.lbl_adv.config(text=data['reason'])
-        self.lbl_cycle.config(text=f"Cycle: {pos+1}/3 | Streak: {streak} detections")
+        # UI Updates with Aurora colors
+        self.lbl_emoji.configure(text=data['emoji'])
+        self.lbl_emo.configure(text=emo.upper(), text_color=data['color'])
+        self.lbl_adv.configure(text=data['reason'])
+        self.lbl_cycle.configure(text=f"📊 Cycle: {pos+1}/3 | Streak: {streak} detections")
         
         # History
         t = datetime.now().strftime("%H:%M:%S")
         self.tree.insert("", 0, values=(t, emo.upper(), ""), tags=(emo,))
         self.history.appendleft({"time": t, "emo": emo, "media": media, "comment": ""})
 
-        if self.voice_var.get():
+        if self.voice_var.get() and self.tts:
             threading.Thread(target=lambda: (self.tts.say(f"{emo}"), self.tts.runAndWait()), daemon=True).start()
 
     # --- ACTION METHODS ---
 
     def add_comment(self):
         sel = self.tree.selection()
-        if not sel: messagebox.showinfo("Tip", "Select a history row first"); return
-        comment = tk.simpledialog.askstring("Log", "Add a personal note:")
+        if not sel: 
+            messagebox.showinfo("Tip", "Select a history row first")
+            return
+        
+        # Create custom dialog with Aurora theme
+        dialog = ctk.CTkInputDialog(
+            text="Add a personal note:",
+            title="Log Comment"
+        )
+        comment = dialog.get_input()
+        
         if comment:
             curr = list(self.tree.item(sel[0], 'values'))
             curr[2] = comment
             self.tree.item(sel[0], values=curr)
             # Sync with history list
             for h in self.history:
-                if h["time"] == curr[0]: h["comment"] = comment; break
+                if h["time"] == curr[0]: 
+                    h["comment"] = comment
+                    break
 
     def clear_history(self):
         if messagebox.askyesno("Confirm", "Clear all session logs?"):
@@ -389,42 +739,174 @@ class EmotionTrackerApp:
     def take_snapshot(self):
         if self.frame is not None:
             fn = f"scan_{datetime.now().strftime('%H%M%S')}.jpg"
-            cv2.imwrite(fn, self.frame); messagebox.showinfo("Saved", f"Snapshot: {fn}")
+            cv2.imwrite(fn, self.frame)
+            messagebox.showinfo("Saved", f"Snapshot saved: {fn}")
 
     def export_csv(self):
-        if not self.history: return
+        if not self.history: 
+            messagebox.showinfo("Info", "No data to export")
+            return
         with open("emotion_pro_report.csv", "w", newline="") as f:
-            w = csv.writer(f); w.writerow(["Time", "Emotion", "Comment"])
-            for h in self.history: w.writerow([h['time'], h['emo'], h['comment']])
-        messagebox.showinfo("Export", "CSV Saved!")
+            w = csv.writer(f)
+            w.writerow(["Time", "Emotion", "Comment"])
+            for h in self.history: 
+                w.writerow([h['time'], h['emo'], h['comment']])
+        messagebox.showinfo("Export", "CSV Saved: emotion_pro_report.csv")
 
     def ai_report(self):
         emo = self.current_emo_key
         data = EMOTION_DATA[emo]
-        msg = f"NEURAL ANALYSIS REPORT\n\nDetected State: {emo.upper()}\nIntelligence Advice: {data['reason']}\nSuggested Reading: {data['book']}\n\nSummary: {data['summary']}"
-        self._popup("AI Assistant", msg)
+        
+        # Create Aurora-styled report popup
+        report_win = ctk.CTkToplevel(self.master)
+        report_win.title("AI Wellness Report")
+        report_win.geometry("450x400")
+        report_win.configure(fg_color=AURORA_THEME["bg_dark"])
+        
+        # Header
+        header = ctk.CTkLabel(
+            report_win,
+            text="🤖 NEURAL ANALYSIS REPORT",
+            font=ctk.CTkFont(size=20, weight="bold"),
+            text_color=AURORA_THEME["aurora_cyan"]
+        )
+        header.pack(pady=20)
+        
+        # Content frame
+        content = ctk.CTkFrame(report_win, fg_color=AURORA_THEME["bg_card"], corner_radius=15)
+        content.pack(fill="both", expand=True, padx=20, pady=(0, 20))
+        
+        # Report details
+        details = [
+            ("Detected State:", emo.upper(), data['color']),
+            ("Intelligence Advice:", data['reason'], AURORA_THEME["text_secondary"]),
+            ("Suggested Reading:", data['book'], AURORA_THEME["aurora_magenta"]),
+            ("Summary:", data['summary'], AURORA_THEME["text_secondary"])
+        ]
+        
+        for label, value, color in details:
+            row = ctk.CTkFrame(content, fg_color="transparent")
+            row.pack(fill="x", padx=20, pady=8)
+            
+            ctk.CTkLabel(
+                row,
+                text=label,
+                font=ctk.CTkFont(size=12, weight="bold"),
+                text_color=AURORA_THEME["aurora_cyan"]
+            ).pack(anchor="w")
+            
+            ctk.CTkLabel(
+                row,
+                text=value,
+                font=ctk.CTkFont(size=14),
+                text_color=color,
+                wraplength=350
+            ).pack(anchor="w")
+        
+        # Close button
+        close_btn = ctk.CTkButton(
+            report_win,
+            text="CLOSE",
+            command=report_win.destroy,
+            fg_color=AURORA_THEME["danger"],
+            hover_color="#FF1744",
+            font=ctk.CTkFont(size=12, weight="bold"),
+            width=120
+        )
+        close_btn.pack(pady=10)
 
     def show_4_step(self):
         emo = self.current_emo_key
         steps = EMOTION_CYCLES[emo]['steps']
         color = EMOTION_CYCLES[emo]['color']
         
-        win = tk.Toplevel(self.master); win.title("Therapeutic Cycle"); win.geometry("450x550"); win.configure(bg="#050505")
-        tk.Label(win, text=f"{emo.upper()} PROCESSING PATH", font=("Orbitron", 14, "bold"), bg="#050505", fg=color).pack(pady=15)
+        # Aurora-styled 4-step cycle window
+        cycle_win = ctk.CTkToplevel(self.master)
+        cycle_win.title("Therapeutic Cycle")
+        cycle_win.geometry("500x650")
+        cycle_win.configure(fg_color=AURORA_THEME["bg_dark"])
+        
+        # Header
+        header = ctk.CTkLabel(
+            cycle_win,
+            text=f"✨ {emo.upper()} PROCESSING PATH",
+            font=ctk.CTkFont(size=18, weight="bold"),
+            text_color=AURORA_THEME["aurora_cyan"]
+        )
+        header.pack(pady=20)
+        
+        # Scrollable frame for steps
+        scroll = ctk.CTkScrollableFrame(cycle_win, fg_color="transparent")
+        scroll.pack(fill="both", expand=True, padx=20, pady=(0, 20))
+        
+        aurora_colors = [
+            AURORA_THEME["aurora_purple"],
+            AURORA_THEME["aurora_blue"],
+            AURORA_THEME["aurora_pink"],
+            AURORA_THEME["aurora_magenta"]
+        ]
         
         for i, s in enumerate(steps):
-            f = tk.Frame(win, bg="#111", padx=10, pady=10, highlightbackground=color, highlightthickness=1)
-            f.pack(fill=tk.X, padx=20, pady=5)
-            tk.Label(f, text=f"STEP {i+1}: {s['name']}", font=("Arial", 10, "bold"), bg="#111", fg=color).pack(anchor="w")
-            tk.Label(f, text=s['description'], bg="#111", fg="white", font=("Arial", 9)).pack(anchor="w")
-            tk.Label(f, text=f"Action: {s['action']}", bg="#111", fg=THEME["accent"], font=("Arial", 8, "italic")).pack(anchor="w")
+            step_color = aurora_colors[i % len(aurora_colors)]
+            
+            step_frame = ctk.CTkFrame(scroll, fg_color=AURORA_THEME["bg_card"], corner_radius=12)
+            step_frame.pack(fill="x", pady=8)
+            
+            # Step header
+            step_header = ctk.CTkLabel(
+                step_frame,
+                text=f"STEP {i+1}: {s['name'].upper()}",
+                font=ctk.CTkFont(size=13, weight="bold"),
+                text_color=step_color
+            )
+            step_header.pack(anchor="w", padx=15, pady=(15, 5))
+            
+            # Description
+            desc_label = ctk.CTkLabel(
+                step_frame,
+                text=s['description'],
+                font=ctk.CTkFont(size=11),
+                text_color=AURORA_THEME["text_primary"]
+            )
+            desc_label.pack(anchor="w", padx=15)
+            
+            # Action
+            action_label = ctk.CTkLabel(
+                step_frame,
+                text=f"Action: {s['action']}",
+                font=ctk.CTkFont(size=10),
+                text_color=AURORA_THEME["aurora_cyan"]
+            )
+            action_label.pack(anchor="w", padx=15, pady=(5, 15))
 
     def _popup(self, title, txt):
-        w = tk.Toplevel(self.master); w.title(title); w.geometry("400x350"); w.configure(bg="#0A0A0A")
-        tk.Label(w, text=txt, bg="#0A0A0A", fg="white", font=("Arial", 11), wraplength=350, justify="left", pady=20).pack()
-        tk.Button(w, text="CLOSE", command=w.destroy, bg=THEME["danger"], fg="white", width=10).pack(pady=10)
+        """Create Aurora-styled popup"""
+        popup = ctk.CTkToplevel(self.master)
+        popup.title(title)
+        popup.geometry("400x350")
+        popup.configure(fg_color=AURORA_THEME["bg_dark"])
+        
+        content = ctk.CTkLabel(
+            popup,
+            text=txt,
+            font=ctk.CTkFont(size=12),
+            text_color=AURORA_THEME["text_primary"],
+            wraplength=350,
+            justify="left"
+        )
+        content.pack(pady=30, padx=20)
+        
+        close_btn = ctk.CTkButton(
+            popup,
+            text="CLOSE",
+            command=popup.destroy,
+            fg_color=AURORA_THEME["danger"],
+            hover_color="#FF1744",
+            width=100
+        )
+        close_btn.pack(pady=10)
 
 if __name__ == "__main__":
-    root = tk.Tk()
+    root = ctk.CTk()
     app = EmotionTrackerApp(root)
     root.mainloop()
